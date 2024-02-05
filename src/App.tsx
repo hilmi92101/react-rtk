@@ -5,8 +5,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch } from './store/store';
 
 // redux: notifications
-import { selectNotificationsCount, } from './store/notifications/notifications.selectors';
-import { increment, incrementByTwo, reset } from './store/notifications/notifications.slice';
+import { selectNotificationsCount, selectResetStatus } from './store/notifications/notifications.selectors';
+import { increment, incrementByTwo, reset, resetCountViaApi } from './store/notifications/notifications.slice';
 
 // components
 import DisplayCounter from './components/demos/DisplayCounter'
@@ -14,12 +14,24 @@ import DisplayCounter from './components/demos/DisplayCounter'
 function App() {
 
     const count = useSelector(selectNotificationsCount);
+    const resetStatus = useSelector(selectResetStatus);
+
     const dispatch = useDispatch<AppDispatch>();
+
+    const resetButtonText = () => {
+        switch (resetStatus) {
+            case 'idle':
+            case 'error':
+                return 'Reset via API';
+            case 'loading':
+                return 'Loading...';
+        }
+    }
 
     return (
         <>
-            
-            <h1>Notification Count = { count }</h1>
+
+            <h1>Notification Count = {count}</h1>
             <div className="card">
                 <button onClick={() => {
                     dispatch(increment())
@@ -36,6 +48,14 @@ function App() {
                 }}>
                     Reset
                 </button>
+                <button onClick={() => {
+                    dispatch(resetCountViaApi())
+                }}>
+                    { resetButtonText() }
+                </button>
+
+
+
             </div>
 
             <DisplayCounter />
